@@ -116,7 +116,7 @@ export default function LoginPage() {
             variant="contained"
             sx={{ mt: 3, ml: 1 }}
           >
-           Dont't have account &nbsp; <Link to='http://localhost:3000/register'>Register Now</Link>
+           Dont't have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/register'>Register Now</Link>
           </Button>
         </Container>
       </Box>
