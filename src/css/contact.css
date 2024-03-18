@@ -1,0 +1,31 @@
+.chat-container {
+    background: #212121;
+    width: 25%;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.chat-box {
+    /* background: red; */
+    padding-left: 1rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.chat-box .user-profile {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+}
+
+.chat-box .user-name {
+    font-size: 16px;
+    display: flex;
+    justify-content: flex-start;
+    display: flex;
+}
+
+.chat-box .user-info {
+    font-size: 14px;
+}

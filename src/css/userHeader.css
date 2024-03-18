@@ -1,0 +1,30 @@
+.user-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: rgb(38, 38, 38);
+    padding: 0.6rem 0.6rem;
+}
+
+.search-box {
+    border-radius: 0.4rem;
+    background-color: rgb(38, 38, 38);
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.search-box svg {
+    font-size: 25px;
+}
+
+.search-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 0 0.5rem;
+}
