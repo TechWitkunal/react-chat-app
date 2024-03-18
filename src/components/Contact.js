@@ -40,7 +40,7 @@ const Contact = () => {
     };
 
     func();
-  }, []);
+  }, [dispatch, navigate, tokenFromLocalStorage, tokenFromStore]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,7 +72,8 @@ const Contact = () => {
     };
 
     fetchData();
-  }, [tokenFromLocalStorage, tokenFromStore, currentChatDetails]); // Add currentChatDetails as a dependency
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]); // Add currentChatDetails as a dependency
 
   const updateChat = async (user) => {
     if (user) {

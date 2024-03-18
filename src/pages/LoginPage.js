@@ -26,7 +26,7 @@ export default function LoginPage() {
     if (tokenFromStore || tokenFromLocalStorage) {
       navigate("/")
     }
-  }, [])
+  }, [navigate, tokenFromLocalStorage, tokenFromStore])
 
 
   const handleSubmit = async () => {
