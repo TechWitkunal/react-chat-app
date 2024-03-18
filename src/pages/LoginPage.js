@@ -36,7 +36,8 @@ export default function LoginPage() {
       if (password.length < 8) { toast.error('Password must be at least 8 characters long.', { position: 'top-center', }); return; }
       if (!password || !email) { toast.error('All field are required', { position: 'top-center', }); return; }
 
-      let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
+      // let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
+      let response = await axios.post("http://localhost:8000/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
       // console.log("res", response)
       response = response.data;
       if (response.success === true) {

@@ -60,6 +60,7 @@ export default function Register() {
       // Get download URL for the uploaded image
 
       let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/register", { name, email, about, password, imageUrl: url }, { headers: { "Content-Type": "application/json", } });
+      // let response = await axios.post("http://localhost:8000/api/auth/register", { name, email, about, password, imageUrl: url }, { headers: { "Content-Type": "application/json", } });
       response = response.data;
 
       if (response.success === true) {

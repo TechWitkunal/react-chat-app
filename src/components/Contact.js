@@ -48,6 +48,7 @@ const Contact = () => {
       try {
         const response = await axios.post(
           "https://chat-app-server-ojsr.onrender.com/api/user/getAllUsers",
+          // "http://localhost:8000/api/user/getAllUsers",
           {},
           {
             headers: {

@@ -68,6 +68,7 @@ const ChatContainer = () => {
     useEffect(() => {
         const func = async () => {
             let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/message/getMessage", { from: userId, to: appSlice.currectChat._id }, { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWViZmU5ZTljN2JhZDA3ZGFjYTQ4OTEiLCJpYXQiOjE3MTAxNDAyNTF9.1BL59VxcpfDE-6gm6hGnszM2YU94yPaRvmSzDXQFxPo" }, })
+            // let response = await axios.post("http://localhost:8000/api/message/getMessage", { from: userId, to: appSlice.currectChat._id }, { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWViZmU5ZTljN2JhZDA3ZGFjYTQ4OTEiLCJpYXQiOjE3MTAxNDAyNTF9.1BL59VxcpfDE-6gm6hGnszM2YU94yPaRvmSzDXQFxPo" }, })
             response = JSON.parse(JSON.stringify(response.data)).data;
             let temp = sortObjectsByCreatedAt(response);
             setAllMessages(temp);
@@ -88,7 +89,10 @@ const ChatContainer = () => {
             // Listen for the response from the server
             socket.on("updateTextMessage", (msg) => {
                 const newMessages = { ...allMessage };
-                newMessages[Object.keys(allMessage).length] = msg.msg;
+                // let length =Object.keys(allMessage) ? Object.keys(allMessage).length : 0;
+                let length = allMessage === undefined ? 0 : Object.keys(allMessage)?.length;
+                console.log(length) 
+                newMessages[length] = msg.msg;
                 const data = sortObjectsByCreatedAt(newMessages);
                 setAllMessages(data);
             });
