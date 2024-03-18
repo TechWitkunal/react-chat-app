@@ -62,12 +62,6 @@ const ChatContainer = () => {
         socket.on("user-online", ({ userName }) => {
             dispatch(updateOnlineUser({ name: userName }))
         })
-
-
-        // Cleanup function to close the socket connection
-        return () => {
-            socket.disconnect();
-        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
