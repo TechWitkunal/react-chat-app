@@ -73,7 +73,7 @@ const Contact = () => {
 
     fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]); // Add currentChatDetails as a dependency
+  }, [dispatch, currentChatDetails]); // Add currentChatDetails as a dependency
 
   const updateChat = async (user) => {
     if (user) {
