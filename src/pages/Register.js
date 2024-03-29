@@ -219,8 +219,8 @@ export default function Register() {
             variant="contained"
             sx={{ mt: 3, ml: 1 }}
           >
-            {/* already have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/login'>login Now</Link> */}
-            already have account &nbsp; <Link to='http://localhost:3000/login'>login Now</Link>
+            already have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/login'>login Now</Link>
+            {/* already have account &nbsp; <Link to='http://localhost:3000/login'>login Now</Link> */}
           </Button>
         </Container>
       </Box>
