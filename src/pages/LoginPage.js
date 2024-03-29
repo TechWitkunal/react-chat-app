@@ -3,7 +3,7 @@ import { logIn, updateRegisterEmail } from '../redux/slice/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
 import { useAuthToken } from '../utils/user';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 
 import axios from 'axios'
@@ -17,6 +17,15 @@ import Grid from '@mui/material/Grid';
 export default function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const isLoggedIn = useSelector(state => state.authSlice.isLoggedIn);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn])
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -36,8 +45,8 @@ export default function LoginPage() {
       if (password.length < 8) { toast.error('Password must be at least 8 characters long.', { position: 'top-center', }); return; }
       if (!password || !email) { toast.error('All field are required', { position: 'top-center', }); return; }
 
-      // let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
-      let response = await axios.post("http://localhost:8000/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
+      let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
+      // let response = await axios.post("http://localhost:8000/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
       // console.log("res", response)
       response = response.data;
       if (response.success === true) {
@@ -47,9 +56,12 @@ export default function LoginPage() {
         dispatch(updateRegisterEmail({ email: email }));
 
         // upding token isLoggedIn, and user_id
+        console.log(response.data.token)
         dispatch(logIn({ isLoggedIn: true, token: response.data.token, user_id: response.data.userId, user: response.data.userDetails }))
 
         toast.success(response.message, { position: 'top-center', });
+        // console.log(response)
+        localStorage.setItem("name", response.data.userDetails.name)
         setTimeout(() => { navigate('/') }, 1000)
         response = "";
         return;
@@ -117,7 +129,8 @@ export default function LoginPage() {
             variant="contained"
             sx={{ mt: 3, ml: 1 }}
           >
-           Dont't have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/register'>Register Now</Link>
+           {/* Dont't have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/register'>Register Now</Link> */}
+           Dont't have account &nbsp; <Link to='http://localhost:3000/register'>Register Now</Link>
           </Button>
         </Container>
       </Box>

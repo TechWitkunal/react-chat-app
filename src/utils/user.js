@@ -13,17 +13,15 @@ export function useAuthToken() {
   return { tokenFromStore, tokenFromLocalStorage };
 }
 
-export function getUserName() {
-  const username = useSelector(state => state.authSlice.user.userName);
-  console.log(username);
-
-  // Return the tokens
-  return username
-}
+export const getUserName = () => {
+  const authSlice = useSelector(state => state.authSlice);
+  return authSlice.user?.name || ""; // Return the username
+};
 
 export async function getUserDetails(tokenFromLocalStorage) {
   try {
-    const response = await axios.post("http://localhost:8000/api/user/getUserInfo", {}, {
+    const response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/user/getUserInfo", {}, {
+      // const response = await axios.post("http://localhost:8000/api/user/getUserInfo", {}, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${tokenFromLocalStorage}`,

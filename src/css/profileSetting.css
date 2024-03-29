@@ -1,0 +1,50 @@
+.profile-photo {
+    width: 15rem;
+    height: 15rem;
+    border-radius: 50%;
+    transition: 0.3s all ease-in-out;
+}
+
+.call-icon {
+    width: 2rem;
+    margin-left: 1rem;
+}
+
+.about-input {
+    width: 13rem;
+    height: 2rem;
+    background: transparent;
+    border: 1px solid white;
+    outline: 1px solid black;
+    color: white;
+    padding: 0 0 0 6px;
+}
+
+.display-none {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+.photo-frame {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.z-1 {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.photo-frame:hover .z-0 {
+    transform: scale(1.1);
+}
+
+.photo-frame:hover .z-1 {
+    pointer-events: all;
+    opacity: 1;
+    cursor: pointer;
+}

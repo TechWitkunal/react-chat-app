@@ -5,6 +5,8 @@ const initialState = {
     isDarkTheme: true,
     currectChat: "",
     onlineUser: [],
+    selectedContact: null,
+    allMessages: null,
 };
 
 export const appSlice = createSlice({
@@ -23,9 +25,22 @@ export const appSlice = createSlice({
                 state.onlineUser.push(action.payload.name);
             }
         },
+        updateAllOnlineUser(state, action) {
+            state.onlineUser = action.payload.name;
+        },
+        removeOnlineUser(state, action) {
+            let userNameToRemove = action.payload.name;
+            state.onlineUser = state.onlineUser.filter(userName => userName !== userNameToRemove);
+        },
+        updateSelectedContact(state, action) {
+            state.selectedContact = action.payload.selectedContact;
+        },
+        updateAllMessages(state, action) {
+            state.allMessages = action.payload.allMessages;
+        },
     },
 });
 
-export const {toggleTheme, updateCurrectChat, updateOnlineUser } = appSlice.actions;
+export const { toggleTheme, updateCurrectChat, updateOnlineUser, updateSelectedContact, updateAllMessages, updateAllOnlineUser, removeOnlineUser } = appSlice.actions;
 
 export default appSlice.reducer;

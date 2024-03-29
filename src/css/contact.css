@@ -29,3 +29,17 @@
 .chat-box .user-info {
     font-size: 14px;
 }
+
+.profile-setting-icon {
+    padding: 0 0.2rem;
+    gap: 1rem;
+    align-items: center;
+    display: flex;
+}
+
+.right-side-bar {
+    width: 25%;
+    height: 100%;
+    /* padding: 3rem 0; */
+    overflow-y: auto;
+}

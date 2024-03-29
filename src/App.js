@@ -30,11 +30,12 @@ const App = () => {
           <Route path="/" element={<ChatPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<Register />} />
+          <Route path="profile" element={<ChatPage />} />
+          <Route path="*" element={<h1>Url not found</h1>} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );
-  
 };
 
 export default App;

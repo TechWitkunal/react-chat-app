@@ -13,9 +13,34 @@ body {
   overflow: hidden;
 }
 
+video {
+  width: 31rem;
+  height: 17rem;
+}
+
 #root {
   width: 100%;
   height: 100%;
+}
+
+.no-decoration {
+  text-decoration: none;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+.text-white {
+  color: white !important;
+}
+
+.bg-clear {
+  background-color: transparent !important;
+}
+
+.gap-0 {
+  gap: 0 !important;
 }
 
 .contact-search-field input {
@@ -33,6 +58,21 @@ body {
   flex-direction: column;
 }
 
+.justify-bw {
+  justify-content: space-between;
+  padding: 0.7rem 1.3rem;
+}
+
+.item-center {
+  width: 100%;
+  text-align: center;
+  align-items: center;
+}
+
+.align-start {
+  align-items: start;
+}
+
 .m-2 {
   margin: 1rem;
 }
@@ -43,4 +83,27 @@ body {
 
 .h-full {
   height: 100%;
+}
+
+.semi-bold {
+  font-weight: 500;
+  color: rgba(238, 238, 238, 0.7);
+}
+
+.bold {
+  font-weight: 700;
+  color: black;
+}
+
+.pv-1 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.css-79ws1d-MuiModal-root {
+  z-index: 999 !important;
 }

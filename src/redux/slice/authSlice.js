@@ -43,7 +43,7 @@ export const authSlice = createSlice({
     },
 });
 
-export const { logIn, signOut, updateRegisterEmail }  = authSlice.actions;
+export const { logIn, signOut, updateRegisterEmail, updateUser }  = authSlice.actions;
 
 // Reducer
 export default authSlice.reducer;
