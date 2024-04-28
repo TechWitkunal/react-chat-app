@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { serverPath } from '../constants/app';
 
 export function useAuthToken() {
   // Get the token from the Redux store
@@ -20,8 +21,8 @@ export const getUserName = () => {
 
 export async function getUserDetails(tokenFromLocalStorage) {
   try {
-    const response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/user/getUserInfo", {}, {
-      // const response = await axios.post("http://localhost:8000/api/user/getUserInfo", {}, {
+    // const response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/user/getUserInfo", {}, {
+      const response = await axios.post(`${serverPath}/api/user/getUserInfo`, {}, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${tokenFromLocalStorage}`,

@@ -15,6 +15,7 @@ import Grid from '@mui/material/Grid';
 
 import { storage } from "../firebase"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { clientPath, serverPath } from '../constants/app';
 
 export default function Register() {
   const isLoggedIn = useSelector(state => state.authSlice.isLoggedIn);
@@ -85,8 +86,8 @@ export default function Register() {
 
       // Get download URL for the uploaded image
 
-      let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/register", { name, email, about, password, imageUrl: url }, { headers: { "Content-Type": "application/json", } });
-      // let response = await axios.post("http://localhost:8000/api/auth/register", { name, email, about, password, imageUrl: url }, { headers: { "Content-Type": "application/json", } });
+      // let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/register", { name, email, about, password, imageUrl: url }, { headers: { "Content-Type": "application/json", } });
+      let response = await axios.post(`${serverPath}/api/auth/register`, { name, email, about, password, imageUrl: url }, { headers: { "Content-Type": "application/json", } });
       response = response.data;
 
       if (response.success === true) {
@@ -219,8 +220,8 @@ export default function Register() {
             variant="contained"
             sx={{ mt: 3, ml: 1 }}
           >
-            already have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/login'>login Now</Link>
-            {/* already have account &nbsp; <Link to='http://localhost:3000/login'>login Now</Link> */}
+            {/* already have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/login'>login Now</Link> */}
+            already have account &nbsp; <Link to={`${clientPath}/login`}>login Now</Link>
           </Button>
         </Container>
       </Box>

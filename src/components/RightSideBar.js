@@ -74,7 +74,6 @@ const RightSideBar = () => {
 
 
     for (let i = 0; i <= 2; i++) { threeFiles.push(filteredFiles[i]); }
-    console.log(filteredFiles)
     setFiles(threeFiles)
 
 
@@ -83,7 +82,6 @@ const RightSideBar = () => {
 
 
   const downloadFile = (url) => {
-    console.log(url)
     const downloadLink = document.createElement('a');
     downloadLink.href = url;
     downloadLink.setAttribute('download', 'download.pdf'); // Set a default filename
@@ -96,12 +94,17 @@ const RightSideBar = () => {
   return (
     <>
       <div className="right-bar-header d-flex">
-        <CloseIcon onClick={() => { dispatch(updateSelectedContact({ selectedContact: null })) }} />
+        <CloseIcon onClick={() => {
+          dispatch(updateSelectedContact({ selectedContact: null }))
+        }} />
         <p className="bold text-white">Contact Info</p>
       </div>
       <div className="item-center">
-        <img src={selectedChat?.profilePhoto} className='profile-photo' alt="" />
-        <p className='bold text-white'>{appSlice.selectedContact?.userName}</p>
+        {/* {console.log(selectedChat.profilePhoto, selectedChat.groupPhoto)} */}
+        <img src={selectedChat?.profilePhoto || selectedChat?.groupPhoto} className='profile-photo' alt=""
+          style={appSlice.deviceWidth <= 1049 ? { width: "7rem", height: "7rem" } : null}
+        />
+        <p className='bold text-white'>{appSlice.selectedContact?.userName || appSlice.selectedContact?.groupName}</p>
         <p className='semi-bold text-white'>{appSlice.selectedContact?.email}</p>
       </div>
 
@@ -134,8 +137,18 @@ const RightSideBar = () => {
           <div className="d-flex">
             <InfoIcon />
             <div className="d-column">
-              <p className="bold text-white">About</p>
-              <p className="semi-bold text-white">{appSlice.selectedContact?.about}</p>
+              {appSlice.selectedContact?.about && (
+                <>
+                  <p className="bold text-white">About</p>
+                  <p className="semi-bold text-white">{appSlice.selectedContact?.about}</p>
+                </>
+              )}
+              {appSlice.selectedContact?.description && (
+                <>
+                  <p className="bold text-white">Description</p>
+                  <p className="semi-bold text-white">{appSlice.selectedContact?.description}</p>
+                </>
+              )}
             </div>
           </div>
         </Box>
@@ -154,10 +167,11 @@ const RightSideBar = () => {
               bgcolor: 'primary.dark',
             },
           }}
+          key={uuidv4()}
         >
           <div className="d-column">
             <div className="d-flex justify-bw">
-              <p className="semi-bold text-white">Image, Video , docs</p>
+              <p className="semi-bold text-white">{appSlice.deviceWidth <= 1049 ? limitSentence("Image, Video , docs", 7) : "Image, Video , docs"}</p>
               <Button style={{ background: "transparent" }} onClick={() => { handleModalOpen() }}>
                 <p className='d-flex text-white gap-0'>12<ArrowForwardIosIcon /></p>
               </Button>
@@ -167,7 +181,10 @@ const RightSideBar = () => {
               return (
                 <>
                   {(imageFormats.includes('image/' + files[key]?.fileUrl.split("%2F").pop().split("_")[0])) && (
-                    <Image key={uuidv4()} width={`12rem`} height={`12rem`} style={{ margin: "1rem 0" }} src={files[key].fileUrl} />
+                    <Image key={uuidv4()}
+                      width={appSlice.deviceWidth <= 1049 ? `8rem` : "12rem"}
+                      height={appSlice.deviceWidth <= 1049 ? "8rem" : "12rem"}
+                      style={{ margin: "1rem 0" }} src={files[key].fileUrl} />
                   )}
 
                   {(videoFormats.includes('video/' + files[key]?.fileUrl.split("%2F").pop().split("_")[0])) && (
@@ -193,11 +210,12 @@ const RightSideBar = () => {
                         }}
                       >
                         <Box
-                          style={{
-                            "height": "5rem",
-                            "width": "17rem",
-                            "margin": "2rem 0",
-                          }}
+                          style={
+                            appSlice.deviceWidth <= 1049 ?
+                              { width: "100%", height: "7rem", "margin": "2rem 0" } :
+                              { "height": "5rem", "width": "100%", "margin": "2rem 0" }
+                            // { "height": "5rem", "width": "17rem", "margin": "2rem 0" }
+                          }
                           sx={{
                             borderRadius: 1,
                             padding: "0 1rem",
@@ -247,13 +265,13 @@ const RightSideBar = () => {
               onChange={(value) => { setSelectedFileType(value) }} />
           </div>
           {(selectedFileType === "Photos" && allImage !== null) && Object.keys(allImage).map(key => (
-            <div style={{ margin: "1rem 0" }}>
+            <div key={uuidv4()} style={{ margin: "1rem 0" }}>
               <Image key={uuidv4()} width={`12rem`} height={`12rem`} style={{ margin: "1rem 0" }} src={allImage[key].fileUrl} />
             </div>
           ))}
 
           {(selectedFileType === "Videos" && allVideo !== null) && Object.keys(allVideo).map(key => (
-            <div style={{ margin: "1rem 0" }}>
+            <div key={uuidv4()} style={{ margin: "1rem 0" }}>
               <a href={`${allVideo[key]?.fileUrl}`} target='_blank'>
                 <video style={{ "width": "19rem", "height": "11rem", margin: "1rem 0" }} key={uuidv4()} controls autoPlay={false} loop={false} muted={true} playsInline={true} className="custom-video">
                   <source src={allVideo[key]?.fileUrl} type={`video/${allVideo[key]?.fileUrl.split("%2F").pop().split("_")[0]}`} />
@@ -263,7 +281,7 @@ const RightSideBar = () => {
           ))}
 
           {(selectedFileType === "Document" && allDocument !== null) && Object.keys(allDocument).map(key => (
-            <div style={{ margin: "1rem 0" }}>
+            <div style={{ margin: "1rem 0" }} key={uuidv4()}>
               <>
                 <ThemeProvider
                   theme={{
@@ -276,12 +294,11 @@ const RightSideBar = () => {
                   }}
                 >
                   <Box
-                    style={{
-                      "height": "5rem",
-                      "width": "20rem",
-                      "margin": "2rem 0",
-
-                    }}
+                    style={
+                      appSlice.deviceWidth <= 1049
+                        ? { width: '7rem', height: '7rem', margin: '2rem 0' }
+                        : { height: '5rem', width: '17rem', margin: '2rem 0' }
+                    }
                     sx={{
                       borderRadius: 1,
                       padding: "0 1rem",

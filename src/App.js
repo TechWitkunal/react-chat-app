@@ -22,6 +22,20 @@ const App = () => {
     [prefersDarkMode],
   );
 
+  if ('Notification' in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        console.log("Notification permission granted.");
+        // you can now send notifications
+      } else {
+        console.log("Notification permission denied.");
+        alert("Please grant the permission to send notification. IT IS SAFE")
+        // handle denial of permission
+      }
+    });
+  }
+
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

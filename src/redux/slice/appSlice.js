@@ -7,6 +7,7 @@ const initialState = {
     onlineUser: [],
     selectedContact: null,
     allMessages: null,
+    deviceWidth: null,
 };
 
 export const appSlice = createSlice({
@@ -38,9 +39,16 @@ export const appSlice = createSlice({
         updateAllMessages(state, action) {
             state.allMessages = action.payload.allMessages;
         },
+        updateDeviceWidth(state, action) {
+            state.deviceWidth = action.payload.deviceWidth;
+        },
     },
 });
 
-export const { toggleTheme, updateCurrectChat, updateOnlineUser, updateSelectedContact, updateAllMessages, updateAllOnlineUser, removeOnlineUser } = appSlice.actions;
+export const 
+{ toggleTheme, updateCurrectChat, updateOnlineUser, updateSelectedContact, 
+  updateAllMessages, updateAllOnlineUser, removeOnlineUser, 
+  updateDeviceWidth
+} = appSlice.actions;
 
 export default appSlice.reducer;

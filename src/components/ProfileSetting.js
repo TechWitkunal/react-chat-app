@@ -23,6 +23,7 @@ import toast from 'react-hot-toast';
 import { storage } from "../firebase"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { limitSentence } from '../utils/limitedSentence';
+import { serverPath } from '../constants/app';
 
 const ProfileSetting = () => {
     const dispatch = useDispatch();
@@ -86,8 +87,8 @@ const ProfileSetting = () => {
         }
 
         const response = await axios.post(
-            "https://chat-app-server-ojsr.onrender.com/api/user/getAllUsers",
-            // "http://localhost:8000/api/user/updateUserAbout",
+            // "https://chat-app-server-ojsr.onrender.com/api/user/getAllUsers",
+            `${serverPath}/api/user/updateUserAbout`,
             { newAbout: updateValue },
             {
                 headers: {
@@ -99,7 +100,7 @@ const ProfileSetting = () => {
         let data = JSON.parse(JSON.stringify(response.data.data));
         let updatedUser = { ...user };
         updatedUser.about = data.about;
-        console.log(updatedUser);
+        // console.log(updatedUser);
         dispatch(updateUser({ user: updatedUser }))
     }
 
@@ -133,7 +134,7 @@ const ProfileSetting = () => {
 
         dispatch(updateUser({ user: prevUser }))
 
-        console.log(uploadedFile);
+        // console.log(uploadedFile);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { logIn, updateRegisterEmail } from '../redux/slice/authSlice';
+import { logIn, updateRegisterEmail, updateToken } from '../redux/slice/authSlice';
 import toast, { Toaster } from 'react-hot-toast';
 import { useAuthToken } from '../utils/user';
 
@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { Box, Button, Container,} from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { clientPath, serverPath } from '../constants/app';
 
 
 export default function LoginPage() {
@@ -45,8 +46,8 @@ export default function LoginPage() {
       if (password.length < 8) { toast.error('Password must be at least 8 characters long.', { position: 'top-center', }); return; }
       if (!password || !email) { toast.error('All field are required', { position: 'top-center', }); return; }
 
-      let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
-      // let response = await axios.post("http://localhost:8000/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
+      // let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/auth/login", { email, password }, { headers: { "Content-Type": "application/json", }, })
+      let response = await axios.post(`${serverPath}/api/auth/login`, { email, password }, { headers: { "Content-Type": "application/json", }, })
       // console.log("res", response)
       response = response.data;
       if (response.success === true) {
@@ -58,6 +59,8 @@ export default function LoginPage() {
         // upding token isLoggedIn, and user_id
         console.log(response.data.token)
         dispatch(logIn({ isLoggedIn: true, token: response.data.token, user_id: response.data.userId, user: response.data.userDetails }))
+        dispatch(updateToken({token: response.data.token }))
+        console.log(response.data.token, "in login in page")
 
         toast.success(response.message, { position: 'top-center', });
         // console.log(response)
@@ -129,8 +132,8 @@ export default function LoginPage() {
             variant="contained"
             sx={{ mt: 3, ml: 1 }}
           >
-           Dont't have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/register'>Register Now</Link>
-           {/* Dont't have account &nbsp; <Link to='http://localhost:3000/register'>Register Now</Link> */}
+           {/* Dont't have account &nbsp; <Link to='https://main--online-chat-app-0011.netlify.app/register'>Register Now</Link> */}
+           Dont't have account &nbsp; <Link to={`${clientPath}/register`}>Register Now</Link>
           </Button>
         </Container>
       </Box>

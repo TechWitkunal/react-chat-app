@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { Image } from 'antd';
 
-import { removeOnlineUser, updateAllMessages, updateAllOnlineUser, updateOnlineUser, updateSelectedContact } from '../redux/slice/appSlice';
+import { removeOnlineUser, updateAllMessages, updateAllOnlineUser, updateDeviceWidth, updateOnlineUser, updateSelectedContact } from '../redux/slice/appSlice';
 
 import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -30,6 +30,8 @@ import { getSocketInstance } from './chatSocket'; // Import the socket instance
 import { ThemeProvider } from '@emotion/react';
 import { Box } from '@mui/material';
 import { limitSentence } from '../utils/limitedSentence';
+import { serverPath } from '../constants/app';
+import { sendNotification } from '../utils/NotificationSender';
 
 const { v4: uuidv4 } = require('uuid');
 let socket;
@@ -44,6 +46,9 @@ const ChatContainer = () => {
     const [messages, setMessages] = useState("");
     const [allMessage, setAllMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const currectChatId = appSlice.currectChat._id;
+
+    const [isScreenBlur, setIsScreenBlur] = useState(false);
 
     const searchInputRef = useRef();
     const searchIconRef = useRef();
@@ -59,11 +64,9 @@ const ChatContainer = () => {
 
     useEffect(() => {
         let name = localStorage.getItem("name") || authSlice.user?.name;
-        if (!name) { console.log("___no name") }
         socket = getSocketInstance();
 
         socket.on('connect', () => {
-            console.log(name);
             socket.emit('user-connect', { userName: name });
         });
 
@@ -73,17 +76,25 @@ const ChatContainer = () => {
 
         socket.emit("getOnlineUser")
         socket.on("recieveOnlineUser", ({ name }) => {
-            console.log(name)
             dispatch(updateAllOnlineUser({ name }))
         })
 
-        socket.on("userDisconnected", ({name}) => {
-            console.log(name)
+        socket.on("userDisconnected", ({ name }) => {
             dispatch(removeOnlineUser({ name }))
         })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const deviceWidthDespatch = () => {
+        let width = window.innerWidth;
+        dispatch(updateDeviceWidth({ deviceWidth: width }))
+    }
+
+    useEffect(() => {
+        deviceWidthDespatch()
+        window.addEventListener("resize", () => { deviceWidthDespatch() })
+    }, [])
 
 
     useEffect(() => {
@@ -94,14 +105,15 @@ const ChatContainer = () => {
     useEffect(() => {
         const func = async () => {
             if (appSlice.currectChat === "") return;
-            let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/message/getMessage", { from: userId, to: appSlice.currectChat._id }, { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWViZmU5ZTljN2JhZDA3ZGFjYTQ4OTEiLCJpYXQiOjE3MTAxNDAyNTF9.1BL59VxcpfDE-6gm6hGnszM2YU94yPaRvmSzDXQFxPo" }, })
-            // let response = await axios.post("http://localhost:8000/api/message/getMessage", { from: userId, to: appSlice.currectChat._id }, { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWViZmU5ZTljN2JhZDA3ZGFjYTQ4OTEiLCJpYXQiOjE3MTAxNDAyNTF9.1BL59VxcpfDE-6gm6hGnszM2YU94yPaRvmSzDXQFxPo" }, })
+            // let response = await axios.post("https://chat-app-server-ojsr.onrender.com/api/message/getMessage", { from: userId, to: appSlice.currectChat._id }, { headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWViZmU5ZTljN2JhZDA3ZGFjYTQ4OTEiLCJpYXQiOjE3MTAxNDAyNTF9.1BL59VxcpfDE-6gm6hGnszM2YU94yPaRvmSzDXQFxPo" }, })
+            let response = await axios.post(`${serverPath}/api/message/getMessage`, { from: userId, to: appSlice.currectChat._id }, { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${authSlice.token}` }, })
             if (response.data.statusCode === 303) {
 
             }
             response = JSON.parse(JSON.stringify(response.data)).data;
             let temp = sortObjectsByCreatedAt(response);
             setAllMessages(temp);
+            console.log(temp)
         }
 
         func();
@@ -113,24 +125,44 @@ const ChatContainer = () => {
         const value = inputRef.current.value;
         if (checkInputValue(value)) {
             setMessages("");
-            // Emit the new message event to the server
-            socket.emit("addTextMessage", { "inputValue": value, "from": userId, "to": appSlice.currectChat._id, fileType: "Text" });
 
-            // Listen for the response from the server
-            socket.on("updateTextMessage", (msg) => {
-                const newMessages = { ...allMessage };
-                // let length =Object.keys(allMessage) ? Object.keys(allMessage).length : 0;
-                let length = allMessage === undefined ? 0 : Object.keys(allMessage)?.length;
-                console.log(length)
-                newMessages[length] = msg.msg;
-                const data = sortObjectsByCreatedAt(newMessages);
-                setAllMessages(data);
-            });
+            if (userDetails?.groupName?.length > 0) {
+                console.log(appSlice.currectChat)
+                socket.emit("addGroupTextMessage", { "inputValue": value, "from": userId, filetype: "Text", "groupId": appSlice.currectChat._id });
+
+                // Listen for the response from the server
+                socket.on("updateGroupTextMessage", (msg) => {
+                    const newMessages = { ...allMessage };
+                    // let length =Object.keys(allMessage) ? Object.keys(allMessage).length : 0;
+                    let length = allMessage === undefined ? 0 : Object.keys(allMessage)?.length;
+                    newMessages[length] = msg.msg;
+                    const data = sortObjectsByCreatedAt(newMessages);
+                    console.log(data);
+                    setAllMessages(data);
+                });
+
+
+            } else {
+                // Emit the new message event to the server
+                socket.emit("addTextMessage", { "inputValue": value, "from": userId, "to": appSlice.currectChat._id, fileType: "Text" });
+
+                // Listen for the response from the server
+                socket.on("updateTextMessage", (msg) => {
+                    const newMessages = { ...allMessage };
+                    // let length =Object.keys(allMessage) ? Object.keys(allMessage).length : 0;
+                    let length = allMessage === undefined ? 0 : Object.keys(allMessage)?.length;
+                    newMessages[length] = msg.msg;
+                    const data = sortObjectsByCreatedAt(newMessages);
+                    setAllMessages(data);
+                });
+            }
         } else {
             toast.error("Please enter something to send");
         }
 
     }
+
+    useEffect(() => {console.log(allMessage, "<--- all messages")}, [allMessage])
 
     const sendImageAndVideoMessageSocket = (url) => {
         socket.emit("addImageMessage", { fileUrl: url, "from": userId, "to": appSlice.currectChat._id, fileType: "Media" });
@@ -164,10 +196,42 @@ const ChatContainer = () => {
                     return sortObjectsByCreatedAt(newMessages);
                 });
             }
-            // console.log(name, userName, toUserName)
             if (name === toUserName) {
                 toast.success(`${userName} has sent a message.`);
+                console.log(isScreenBlur, "inside if")
+                if (!isScreenBlur) {
+                    sendNotification(`${userName} has send a message`, msg.text)
+                }
             }
+        })
+
+        socket.on("GroupTextMessageReceive", ({ userName, groupId, msg }) => {
+            // let name = username || authSlice.user?.name; 
+            console.log(groupId, currectChatId, groupId ==currectChatId)
+            // if (groupId == appSlice.currectChat._id) {
+            //     setAllMessages(prevMessages => {
+            //         const newMessages = { ...prevMessages };
+            //         newMessages[Object.keys(prevMessages).length] = msg;
+            //         return sortObjectsByCreatedAt(newMessages);
+            //     });
+            // }
+
+
+            if (groupId == currectChatId) {
+                setAllMessages(prevMessages => {
+                    const updatedMessages = [...prevMessages, msg];
+                    return sortObjectsByCreatedAt(updatedMessages);
+                });
+                toast.success(`${userName} has sent a message.`);
+                console.log(isScreenBlur, "<---- is screen blue")
+                if (isScreenBlur) {
+                    sendNotification(`${userName} has send a message`, msg.text)
+                }
+            }
+
+            // if (name === "toUserName") {
+                // console.log(isScreenBlur, "inside if")
+            // }
         })
 
         socket.on("imageMessageReceive", ({ userName, toUserName, msg }) => {
@@ -180,6 +244,24 @@ const ChatContainer = () => {
             }
         })
     }
+
+    useEffect(() => {
+        console.log(isScreenBlur)
+    }, [isScreenBlur])
+
+    useEffect(() => {
+        const handleBlur = () => setIsScreenBlur(true);
+        const handleFocus = () => setIsScreenBlur(false);
+
+        window.addEventListener("blur", handleBlur);
+        window.addEventListener("focus", handleFocus);
+
+        return () => {
+            window.removeEventListener("blur", handleBlur);
+            window.removeEventListener("focus", handleFocus);
+        };
+    }, []);
+
 
 
     useEffect(() => {
@@ -214,14 +296,11 @@ const ChatContainer = () => {
         let isDocument = documentFormats.includes(e.type);
 
         if (isImage || isVideo || isDocument) {
-            // file formate is correct now upload it to firebase
-            // console.log(e.type)
             const Imgreference = ref(storage, `users/${authSlice.user.name}/${e.type}_message-to-${appSlice.currectChat.userName || ""}__${uuidv4()}`);
             await uploadBytes(Imgreference, e);
 
             // Get the download URL of the uploaded image
             const url = await getDownloadURL(Imgreference);
-            console.log("file is this ", e.name)
             if (isImage || isVideo) {
                 sendImageAndVideoMessageSocket(url);
             } else {
@@ -270,12 +349,10 @@ const ChatContainer = () => {
     }
 
     const downloadFile = (url) => {
-        console.log(url)
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
         downloadLink.setAttribute('download', 'download.pdf'); // Set a default filename
         downloadLink.setAttribute('target', '_blank'); // Set a default filename
-        console.log(downloadLink);
         downloadLink.click();
 
     };
@@ -286,14 +363,15 @@ const ChatContainer = () => {
             {/* <h1>Hello</h1> */}
             {Object.keys(userDetails).length > 0 && (
                 <>
-                    <div className='chat' style={selectedChat ? { "width": "calc(100% - 50%)" } : { "width": "calc(100% - 25%)" }}>
+                    <div className='chat'>
+                        {/* <div className='chat' style={selectedChat ? { "width": "calc(100% - 50%)" } : { "width": "calc(100% - 25%)" }}> */}
                         {/* <div className="chat-wallpaper"></div> */}
                         <div className="d-flex chat-header">
                             <div className='d-flex pointer' onClick={() => { selectContact() }}>
-                                <img className='user-chatting-photo' src={userDetails.profilePhoto} alt="Photo" />
+                                <img className='user-chatting-photo' src={userDetails.profilePhoto || userDetails.groupPhoto} alt="Photo" />
                                 <div className='d-column'>
-                                    <h1 className='name'>{userDetails.userName}</h1>
-                                    <p className='about'>{userDetails.about}</p>
+                                    <h1 className='name'>{userDetails.userName || userDetails.groupName}</h1>
+                                    <p className='about'>{userDetails.about || userDetails.description}</p>
                                 </div>
                             </div>
                             <div className='d-flex'>
@@ -316,9 +394,9 @@ const ChatContainer = () => {
                                     let day = getDayName(filteredMessages[key].createdAt);
                                     return (
                                         <>
-                                            {(filteredMessages[key].from === appSlice.currectChat._id || filteredMessages[key].to === appSlice.currectChat._id) && (
+                                            {(filteredMessages[key].from === appSlice.currectChat._id || filteredMessages[key].to === appSlice.currectChat._id || true) && (
                                                 <>
-                                                    <div>
+                                                    <div key={uuidv4()}>
                                                         {!(messageDay.includes(day)) && (
                                                             <>
                                                                 {day}
@@ -327,12 +405,10 @@ const ChatContainer = () => {
                                                         )}
                                                     </div>
                                                     <div key={uuidv4()} className={`message ${userId === filteredMessages[key].from ? "me" : "other"}`}>
-                                                        {/* {console.log(filteredMessages[key].type === "Text", filteredMessages[key].type)} */}
                                                         {filteredMessages[key].type === "Text" ? (
                                                             <p key={uuidv4()}>{filteredMessages[key].text}</p>
                                                         ) : (
                                                             <>
-                                                                {console.log(filteredMessages[key].fileUrl.split("%2F").pop().split("_")[0])}
                                                                 {(imageFormats.includes('image/' + filteredMessages[key].fileUrl.split("%2F").pop().split("_")[0])) && (
                                                                     <Image key={uuidv4()} style={{ margin: "2rem 0" }} width={200} src={filteredMessages[key].fileUrl} />
                                                                 )}

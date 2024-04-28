@@ -38,8 +38,17 @@
 }
 
 .right-side-bar {
-    width: 25%;
+    width: 0%;
     height: 100%;
     /* padding: 3rem 0; */
     overflow-y: auto;
+    background: black;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.right-side-bar-show {
+    width: 25%;
+    transition: 0.3s all ease-in-out;
 }

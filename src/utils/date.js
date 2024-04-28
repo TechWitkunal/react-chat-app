@@ -1,5 +1,7 @@
 export function sortObjectsByCreatedAt(data) {
-    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    console.log(data);
+    console.log(!data, typeof data !== 'object')
+    if (!data || typeof data !== 'object') {
         // throw new TypeError('Invalid data argument. Please provide an object.');
         return;
     }
