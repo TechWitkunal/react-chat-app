@@ -40,7 +40,7 @@ const ChatContainer = () => {
 
     const appSlice = useSelector(state => state.appSlice);
     const authSlice = useSelector(state => state.authSlice);
-    const selectedChat = useSelector(state => state.appSlice.selectedContact);
+    // const selectedChat = useSelector(state => state.appSlice.selectedContact);
     const dispatch = useDispatch();
     const [userDetails, setUserDetails] = useState({});
     const [messages, setMessages] = useState("");
@@ -94,6 +94,7 @@ const ChatContainer = () => {
     useEffect(() => {
         deviceWidthDespatch()
         window.addEventListener("resize", () => { deviceWidthDespatch() })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
@@ -207,7 +208,7 @@ const ChatContainer = () => {
 
         socket.on("GroupTextMessageReceive", ({ userName, groupId, msg }) => {
             // let name = username || authSlice.user?.name; 
-            console.log(groupId, currectChatId, groupId ==currectChatId)
+            // console.log(groupId, currectChatId, groupId ===currectChatId)
             // if (groupId == appSlice.currectChat._id) {
             //     setAllMessages(prevMessages => {
             //         const newMessages = { ...prevMessages };
@@ -217,7 +218,7 @@ const ChatContainer = () => {
             // }
 
 
-            if (groupId == currectChatId) {
+            if (groupId === currectChatId) {
                 setAllMessages(prevMessages => {
                     const updatedMessages = [...prevMessages, msg];
                     return sortObjectsByCreatedAt(updatedMessages);
